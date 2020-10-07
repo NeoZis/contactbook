@@ -1,0 +1,8 @@
+export const DELETE_CONTACT = 'DELETE_CONTACT';
+export const CREATE_CONTACT = 'CREATE_CONTACT';
+export const SHOW_CREATE_PANEL = 'SHOW_CREATE_PANEL';
+export const SHOW_ABOUT_CONTACT = 'SHOW_ABOUT_CONTACT';
+export const ADD_NEW_INFO = 'ADD_NEW_INFO';
+export const ON_CONTACTS = 'ON_CONTACTS';
+export const SHOW_MODAL = 'SHOW_MODAL';
+export const CLEAR_MODAL_INFO = 'CLEAR_MODAL_INFO';
