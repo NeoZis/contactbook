@@ -6,6 +6,7 @@
           <input type="button" value="Вернуться назад" @click="onContacts">
         </div>
         <div class="to-edit">
+          <input type="button" v-show="lastChanges&&!edit" value="Вернуть последние изменения" @click="isReturn()">
           <input type="button" v-show="!edit" value="Редактировать" @click="isEdit(true)">
           <input type="button" v-show="edit" value="Сохранить" @click="onSave(contact)">
           <input type="button" v-show="edit" value="Отменить" @click="isEdit(false)">
@@ -19,6 +20,7 @@
       <p v-else>Фамилия: <input type="text"  v-model="contact.lastName"></p>
       <p v-if="!edit">Номер: {{currentContact.number}}</p>
       <p v-else>Номер: <input type="text" v-model="contact.number"></p>
+      <p style="color: red" v-if="errorEdit">Заполните все поля</p>
     </div>
     <div class="other-info">
       <h3>Остальные данные</h3>
@@ -37,11 +39,11 @@
       <div v-if="addInfo">
         <p>Параметр <input type="text" v-model="newInfo.key"></p>
         <p>Информация <input type="text" v-model="newInfo.value"></p>
-        <p style="color: red" v-if="error">Заполните все поля</p>
+        <p style="color: red" v-if="errorInfo">Заполните все поля</p>
         <input type="button" @click="addNewInfo(newInfo)" value="Добавить" >
       </div>
-      <p @click="addInfo = true" v-if="!addInfo&&!edit">Добавить новый пункт</p>
-      <p @click="addInfo = false" v-else-if="!edit">Скрыть</p>
+      <input type="button" @click="addInfo = true" v-if="!addInfo&&!edit" value="Добавить новый пункт">
+      <input type="button" @click="addInfo = false" v-else-if="!edit" value="Скрыть">
     </div>
   </main>
 </template>
@@ -51,7 +53,7 @@ import {mapState} from 'vuex';
 
 export default {
   name: "AboutContact",
-  computed: mapState(['currentContact']),
+  computed: mapState(['currentContact', 'lastChanges']),
   data () {
     return {
       addInfo: false,
@@ -59,14 +61,15 @@ export default {
         key: '',
         value: ''
       },
-      error: false,
+      errorInfo: false,
+      errorEdit: false,
       edit: false,
       contact: null
     }
   },
   methods: {
     addNewInfo (newInfo) {
-      if (!(newInfo.key&&newInfo.value)) return this.error=true;
+      if (!(newInfo.key&&newInfo.value)) return this.errorInfo = true;
       this.$store.dispatch('addNewInfo', {newInfo: newInfo, id:this.currentContact.id});
       this.addInfo = false;
       this.newInfo = {key: '', value: ''}
@@ -91,13 +94,19 @@ export default {
       }
     },
     onSave (contact) {
+      if (!(contact.firstName&&contact.lastName&&contact.number)) return this.errorEdit=true;
       this.$store.dispatch('onSave', contact);
       this.edit = false;
       this.contact = null;
+      this.errorEdit = false;
     },
     removeOther (key) {
       let index = this.contact.other.findIndex(el => el.key === key);
       this.contact.other.splice(index, 1);
+    }
+    ,
+    isReturn () {
+      this.$store.dispatch('isReturn')
     }
   }
 }
@@ -135,19 +144,20 @@ main > div {
   top: 10px;
   right: 30px;
 }
-.top input {
+input[type="button"] {
   border: 2px solid black;
   border-radius: 10px;
   padding: 5px;
+  margin-bottom: 10px;
 }
-.top input:hover {
+input[type="button"]:hover {
   cursor: pointer;
 }
-.top input:active {
+input[type="button"]:active {
   color: white;
   background-color: black;
 }
-.top input:focus {
+input[type="button"]:focus {
   outline: none;
 }
 .remove {

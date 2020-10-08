@@ -7,3 +7,4 @@ export const ON_CONTACTS = 'ON_CONTACTS';
 export const SHOW_MODAL = 'SHOW_MODAL';
 export const CLEAR_MODAL_INFO = 'CLEAR_MODAL_INFO';
 export const ON_SAVE = 'ON_SAVE';
+export const IS_RETURN = 'IS_RETURN';

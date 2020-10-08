@@ -1,4 +1,5 @@
-import {CREATE_CONTACT, DELETE_CONTACT, SHOW_CREATE_PANEL, SHOW_ABOUT_CONTACT, ADD_NEW_INFO, ON_CONTACTS, SHOW_MODAL, CLEAR_MODAL_INFO, ON_SAVE} from "./mutation-types";
+import {CREATE_CONTACT, DELETE_CONTACT, SHOW_CREATE_PANEL, SHOW_ABOUT_CONTACT,
+        ADD_NEW_INFO, ON_CONTACTS, SHOW_MODAL, CLEAR_MODAL_INFO, ON_SAVE , IS_RETURN} from "./mutation-types";
 
 export default {
   [DELETE_CONTACT] (state, contact) {
@@ -25,9 +26,11 @@ export default {
   [ON_CONTACTS] (state) {
     state.currentContact = null;
     state.showContacts = true;
+    state.lastChanges = null;
   },
   [SHOW_MODAL] (state, action) {
     state.modalInfo.show = action.show;
+    if (!action.contact.firstName) return;
     state.modalInfo.name = `${action.contact.firstName} ${action.contact.lastName}`;
     state.modalInfo.currentQuest = state.modalInfo.questions[action.question];
     state.modalInfo.action = action.action;
@@ -40,8 +43,13 @@ export default {
     state.modalInfo.object = null;
   },
   [ON_SAVE] (state, contact) {
+    state.lastChanges = state.currentContact;
     let indexContact = state.contacts.findIndex(el => el.id === contact.id);
     state.currentContact = contact;
     state.contacts[indexContact] = contact;
+  },
+  [IS_RETURN] (state) {
+    state.currentContact = state.lastChanges;
+    state.lastChanges = null;
   }
 }

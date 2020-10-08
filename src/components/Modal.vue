@@ -45,7 +45,7 @@ export default {
     },
     isAction(action) {
       this.$store.dispatch(action, this.modalInfo.object)
-      this.$store.dispatch('showModal', false)
+      this.$store.dispatch('showModal', {show: false})
 
     }
   }
@@ -81,7 +81,7 @@ export default {
 
 .modal-header {
   border-bottom: 1px solid #eeeeee;
-  color: #4AAE9B;
+  font-weight: bold;
   justify-content: center;
 }
 
