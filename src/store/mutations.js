@@ -1,4 +1,4 @@
-import {CREATE_CONTACT, DELETE_CONTACT, SHOW_CREATE_PANEL, SHOW_ABOUT_CONTACT, ADD_NEW_INFO, ON_CONTACTS, SHOW_MODAL, CLEAR_MODAL_INFO} from "./mutation-types";
+import {CREATE_CONTACT, DELETE_CONTACT, SHOW_CREATE_PANEL, SHOW_ABOUT_CONTACT, ADD_NEW_INFO, ON_CONTACTS, SHOW_MODAL, CLEAR_MODAL_INFO, ON_SAVE} from "./mutation-types";
 
 export default {
   [DELETE_CONTACT] (state, contact) {
@@ -19,8 +19,8 @@ export default {
     state.showContacts = false;
   },
   [ADD_NEW_INFO] (state, newInfo) {
-    let indexContact = state.contacts.indexOf(state.currentContact);
-    state.contacts[indexContact].other.push(newInfo)
+    let indexContact = state.contacts.findIndex(el => el.id === newInfo.id)
+    state.contacts[indexContact].other.push(newInfo.newInfo)
   },
   [ON_CONTACTS] (state) {
     state.currentContact = null;
@@ -38,5 +38,10 @@ export default {
     state.modalInfo.currentQuest = null;
     state.modalInfo.action = null;
     state.modalInfo.object = null;
+  },
+  [ON_SAVE] (state, contact) {
+    let indexContact = state.contacts.findIndex(el => el.id === contact.id);
+    state.currentContact = contact;
+    state.contacts[indexContact] = contact;
   }
 }

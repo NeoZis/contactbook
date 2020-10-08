@@ -6,29 +6,42 @@
           <input type="button" value="Вернуться назад" @click="onContacts">
         </div>
         <div class="to-edit">
-          <input type="button" value="Редактировать" @click="isEdit">
+          <input type="button" v-show="!edit" value="Редактировать" @click="isEdit(true)">
+          <input type="button" v-show="edit" value="Сохранить" @click="onSave(contact)">
+          <input type="button" v-show="edit" value="Отменить" @click="isEdit(false)">
         </div>
       </div>
       <h3>Основная информация</h3>
       <img src="../assets/person.png" alt="logo">
-      <p>Имя: {{currentContact.firstName}}</p>
-<!--      <p>Имя: <input type="text" v-show="edit" v-model="currentContact.firstName"></p>-->
-      <p>Фамилия: {{currentContact.lastName}}</p>
-<!--      <p>Фамилия: <input type="text" v-show="edit" v-model="currentContact.lastName"></p>-->
-      <p>Номер: {{currentContact.number}}</p>
-<!--      <p>Номер: <input type="text" v-show="edit" v-model="currentContact.number"></p>-->
+      <p v-if="!edit">Имя: {{currentContact.firstName}}</p>
+      <p v-else>Имя: <input type="text"  v-model="contact.firstName"></p>
+      <p v-if="!edit">Фамилия: {{currentContact.lastName}}</p>
+      <p v-else>Фамилия: <input type="text"  v-model="contact.lastName"></p>
+      <p v-if="!edit">Номер: {{currentContact.number}}</p>
+      <p v-else>Номер: <input type="text" v-model="contact.number"></p>
     </div>
     <div class="other-info">
       <h3>Остальные данные</h3>
-      <p v-for="info in currentContact.other" :info.sync="info"><span style="font-weight: bold">{{info.key}}</span>: <span style="font-style: italic">{{info.value}}</span></p>
+      <div v-if="!edit" class="list-info">
+        <p v-for="info in currentContact.other">
+          <span style="font-weight: bold">{{info.key}}</span>:
+          <span style="font-style: italic">{{info.value}}</span></p>
+      </div>
+      <div v-else class="list-edit">
+        <p v-for="info in contact.other">
+          <input type="text" v-model="info.key">:
+          <input type="text" v-model="info.value">
+          <span class="remove" @click="removeOther(info.key)"> — </span>
+        </p>
+      </div>
       <div v-if="addInfo">
         <p>Параметр <input type="text" v-model="newInfo.key"></p>
         <p>Информация <input type="text" v-model="newInfo.value"></p>
         <p style="color: red" v-if="error">Заполните все поля</p>
         <input type="button" @click="addNewInfo(newInfo)" value="Добавить" >
       </div>
-      <p @click="addInfo = true" v-if="!addInfo">Добавить новый пункт</p>
-      <p @click="addInfo = false" v-else>Скрыть</p>
+      <p @click="addInfo = true" v-if="!addInfo&&!edit">Добавить новый пункт</p>
+      <p @click="addInfo = false" v-else-if="!edit">Скрыть</p>
     </div>
   </main>
 </template>
@@ -48,23 +61,43 @@ export default {
       },
       error: false,
       edit: false,
-      contact: {
-        id: this.currentContact
-      }
+      contact: null
     }
   },
   methods: {
     addNewInfo (newInfo) {
       if (!(newInfo.key&&newInfo.value)) return this.error=true;
-      this.$store.dispatch('addNewInfo', newInfo);
+      this.$store.dispatch('addNewInfo', {newInfo: newInfo, id:this.currentContact.id});
       this.addInfo = false;
       this.newInfo = {key: '', value: ''}
     },
     onContacts () {
-      this.$store.dispatch('onContacts')
+      if (this.edit) {
+        this.$store.dispatch('showModal', {contact: this.currentContact, show: true, question: 2, action: 'onContacts'});
+      } else {
+        this.$store.dispatch('onContacts')
+        this.edit = false
+      }
     },
-    isEdit() {
-      this.edit = !this.edit
+    isEdit(state) {
+      this.edit = state;
+      this.addInfo = false;
+      if (this.edit) {
+        this.contact = {...this.currentContact};
+        this.contact.other = [];
+        this.currentContact.other.forEach(el => this.contact.other.push({...el}));
+      } else {
+        this.contact = null;
+      }
+    },
+    onSave (contact) {
+      this.$store.dispatch('onSave', contact);
+      this.edit = false;
+      this.contact = null;
+    },
+    removeOther (key) {
+      let index = this.contact.other.findIndex(el => el.key === key);
+      this.contact.other.splice(index, 1);
     }
   }
 }
@@ -110,9 +143,15 @@ main > div {
 .top input:hover {
   cursor: pointer;
 }
-.top input:focus {
-  outline: none;
+.top input:active {
   color: white;
   background-color: black;
+}
+.top input:focus {
+  outline: none;
+}
+.remove {
+  color: red;
+  cursor: pointer;
 }
 </style>

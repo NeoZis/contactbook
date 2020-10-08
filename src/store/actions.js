@@ -1,4 +1,4 @@
-import {CREATE_CONTACT, DELETE_CONTACT, SHOW_CREATE_PANEL, SHOW_ABOUT_CONTACT, ADD_NEW_INFO, ON_CONTACTS, SHOW_MODAL, CLEAR_MODAL_INFO} from "./mutation-types";
+import {CREATE_CONTACT, DELETE_CONTACT, SHOW_CREATE_PANEL, SHOW_ABOUT_CONTACT, ADD_NEW_INFO, ON_CONTACTS, SHOW_MODAL, CLEAR_MODAL_INFO, ON_SAVE} from "./mutation-types";
 
 export default {
   deleteContact ({commit}, contact) {
@@ -22,5 +22,8 @@ export default {
   },
   showModal ({commit}, action) {
     commit(SHOW_MODAL, action)
+  },
+  onSave ({commit}, contact) {
+    commit(ON_SAVE, contact)
   }
 }

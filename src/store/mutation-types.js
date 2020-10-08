@@ -6,3 +6,4 @@ export const ADD_NEW_INFO = 'ADD_NEW_INFO';
 export const ON_CONTACTS = 'ON_CONTACTS';
 export const SHOW_MODAL = 'SHOW_MODAL';
 export const CLEAR_MODAL_INFO = 'CLEAR_MODAL_INFO';
+export const ON_SAVE = 'ON_SAVE';
